@@ -36,7 +36,7 @@ class ProgramType(models.Model):
 class Programs(models.Model):
     model = models.ForeignKey(workmodel,on_delete=models.CASCADE,default=2)
     party = models.ForeignKey(Parties,on_delete=models.CASCADE)
-    program_model  = models.OneToOneField(ProgramType,on_delete=models.CASCADE)
+    program_model = models.OneToOneField(ProgramType,on_delete=models.CASCADE)
     finance_request_type = models.BooleanField(default=False)
     currency = models.CharField(max_length=3)
     max_total_limit = models.DecimalField(max_digits=5, decimal_places=2)
@@ -53,3 +53,6 @@ class Programs(models.Model):
     interest_type = models.BooleanField(default=False)
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2)
     margin = models.DecimalField(max_digits=5, decimal_places=2)
+    
+    def __str__(self):
+        return self.program_model.description   

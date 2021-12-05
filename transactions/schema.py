@@ -13,7 +13,7 @@ class PartiesType(DjangoObjectType):
         model = Parties
         fields = '__all__'
 
-class ProgramtypeType(DjangoObjectType):
+class Program_Type(DjangoObjectType):
     class Meta:
         model = ProgramType
         fields = '__all__'
@@ -26,7 +26,7 @@ class ProgramsType(DjangoObjectType):
 class Query(graphene.ObjectType):
     all_workmodel = DjangoListField(workmodelType)
     all_parties = DjangoListField(PartiesType)
-    all_programtypes = DjangoListField(ProgramtypeType)
+    all_programtypes = DjangoListField(Program_Type)
     all_programs = DjangoListField(ProgramsType)
 
 class workmodelInput(graphene.InputObjectType):
@@ -40,8 +40,7 @@ class workmodelType_create(graphene.Mutation):
     
     workmodel1 = graphene.Field(workmodelType)
 
-    @classmethod
-    def mutate(cls, root, info, _model=None):
+    def mutate(self, root, _model=None):
         _workmodel1 = workmodel.objects.create(**_model)
         return workmodelType_create(workmodel1=_workmodel1)
 
@@ -53,8 +52,8 @@ class workmodelType_update(graphene.Mutation):
     
     workmodel1 = graphene.Field(workmodelType)
 
-    @classmethod
-    def mutate(cls, root, info, description, workflow, id):
+    
+    def mutate(self, root, description, workflow, id):
         workmodel1 = workmodel.objects.get(id=id)
         workmodel1.description = description
         workmodel1.workflow = workflow
@@ -67,8 +66,7 @@ class workmodelType_delete(graphene.Mutation):
 
     workmodel1 = graphene.Field(workmodelType)
 
-    @classmethod
-    def mutate(cls, root, info, id):
+    def mutate(self, root, id):
         workmodel1 = workmodel.objects.get(id=id)
         workmodel1.delete()
         return workmodelType_delete(workmodel1=workmodel1)
@@ -153,6 +151,40 @@ class PartiesType_delete(graphene.Mutation):
         _party.delete()
         return PartiesType_delete(parties=_party)
 
+class createProgramType(graphene.Mutation):
+    class Arguments:
+        description = graphene.String(required=True)
+    
+    _program_type = graphene.Field(Program_Type)
+
+    def mutate(self, root, description):
+        _programtype = ProgramType.objects.create(description=description)
+        return createProgramType(_program_type=_programtype)
+
+class updateProgramType(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+        description = graphene.String(required=True)
+    
+    _program_type = graphene.Field(Program_Type)
+
+    def mutate(self, root, id, description):
+        _programtype = ProgramType.objects.get(id=id)
+        _programtype.description = description
+        _programtype.save()
+        return updateProgramType(_program_type=_programtype)
+
+class deleteProgramType(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+    
+    _program_type = graphene.Field(Program_Type)
+
+    def mutate(self, root, id):
+        _programtype = ProgramType.objects.get(id=id)
+        _programtype.delete()
+        return deleteProgramType(_program_type=_programtype)
+
 class Mutation(graphene.ObjectType):
     create_workmodel = workmodelType_create.Field()
     update_workmodel = workmodelType_update.Field()
@@ -161,6 +193,10 @@ class Mutation(graphene.ObjectType):
     create_parties = PartiesType_create.Field()
     update_parties = PartiesType_update.Field()
     delete_parties = PartiesType_delete.Field()
+
+    create_programtype = createProgramType.Field()
+    update_programtype = updateProgramType.Field()
+    delete_programtype = deleteProgramType.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
