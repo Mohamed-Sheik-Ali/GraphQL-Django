@@ -286,7 +286,7 @@ class deletePrograms(graphene.Mutation):
     def mutate(self, root, id): 
         _program = Programs.objects.get(id=id)
         _program.delete()
-        return deleteProgram
+        return deletePrograms(_programs=_program)
 
 class Mutation(graphene.ObjectType):
     create_workmodel = workmodelType_create.Field()
@@ -304,6 +304,5 @@ class Mutation(graphene.ObjectType):
     create_program = createPrograms.Field()
     update_program = updatePrograms.Field()
     delete_program = deletePrograms.Field()
-
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
